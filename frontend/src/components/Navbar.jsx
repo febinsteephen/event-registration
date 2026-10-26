@@ -10,7 +10,7 @@ export default function Navbar() {
             <Sparkles size={18} />
           </div>
           <div className="brand-titles">
-            <span className="brand-name">EventHub</span>
+            <span className="brand-name">GatherUp</span>
             <span className="brand-sub">Admin Portal</span>
           </div>
         </div>
