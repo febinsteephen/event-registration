@@ -2,7 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import connectDB from './config/db.js';
-import eventRoutes from './routes/eventRoutes.js';
+import event_routes from './routes/event_routes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -17,7 +17,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // event routes
-app.use('/api/events', eventRoutes);
+app.use('/api/events', event_routes);
 
 // 404 handler
 app.use((req, res) => {

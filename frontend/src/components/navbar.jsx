@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 
-// navbar with brand and navigation links
+// navbar with brand and links
 export default function Navbar() {
   return (
     <header className="navbar-wrapper">
@@ -14,9 +14,9 @@ export default function Navbar() {
         </NavLink>
 
         <nav className="nav-tabs">
-          <NavLink to="/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            Dashboard
-          </NavLink>
+            <NavLink to="/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+              Dashboard
+            </NavLink>
           <NavLink to="/add" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             Add Event
           </NavLink>

@@ -6,7 +6,7 @@ export default function EditEvent({ showToast }) {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
+  const [form_val, setForm_val] = useState({
     name: '',
     description: '',
     date: '',
@@ -14,59 +14,59 @@ export default function EditEvent({ showToast }) {
     totalRegistrations: 0
   });
 
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [fetchError, setFetchError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [formErr, setFormErr] = useState({});
+  const [not_found, setNot_found] = useState(false);
 
-  // load existing event data
+  // load event
   useEffect(() => {
-    const loadEvent = async () => {
+    const fetch_evt = async () => {
       try {
-        setLoading(true);
+        setIsLoading(true);
         const res = await getEvent(id);
         if (res.success && res.data) {
           const item = res.data;
-          const formattedDate = item.date ? new Date(item.date).toISOString().split('T')[0] : '';
-          setFormData({
+          const dt = item.date ? new Date(item.date).toISOString().split('T')[0] : '';
+          setForm_val({
             name: item.name || '',
             description: item.description || '',
-            date: formattedDate,
+            date: dt,
             venue: item.venue || '',
             totalRegistrations: item.totalRegistrations || 0
           });
         }
       } catch (err) {
-        setFetchError('Event not found or failed to load');
+        setNot_found(true);
         showToast({ type: 'error', message: 'Could not fetch event details' });
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
-    loadEvent();
+    fetch_evt();
   }, [id]);
 
   const validate = () => {
-    const errs = {};
-    if (!formData.name.trim()) errs.name = 'Event name is required';
-    if (!formData.description.trim()) errs.description = 'Description is required';
-    if (!formData.date) errs.date = 'Date is required';
-    if (!formData.venue.trim()) errs.venue = 'Venue is required';
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
+    let e = {};
+    if (!form_val.name.trim()) e.name = 'Event name is required';
+    if (!form_val.description.trim()) e.description = 'Description is required';
+    if (!form_val.date) e.date = 'Date is required';
+    if (!form_val.venue.trim()) e.venue = 'Venue is required';
+    setFormErr(e);
+    return Object.keys(e).length === 0;
   };
 
-  const handleChange = (e) => {
+  const on_change = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: null }));
+    setForm_val((prev) => ({ ...prev, [name]: value }));
+    if (formErr[name]) {
+      setFormErr((prev) => ({ ...prev, [name]: null }));
     }
   };
 
-  // handle form submit
-  const handleSubmit = async (e) => {
+  // save updates
+  const handle_update = async (e) => {
     e.preventDefault();
     if (!validate()) {
       showToast({ type: 'error', message: 'Please fix the errors' });
@@ -74,8 +74,8 @@ export default function EditEvent({ showToast }) {
     }
 
     try {
-      setSubmitting(true);
-      const res = await updateEvent(id, formData);
+      setSaving(true);
+      const res = await updateEvent(id, form_val);
       if (res.success) {
         showToast({ type: 'success', message: 'Event updated!' });
         navigate('/dashboard');
@@ -84,11 +84,11 @@ export default function EditEvent({ showToast }) {
       const msg = err.response?.data?.message || 'Failed to update event';
       showToast({ type: 'error', message: msg });
     } finally {
-      setSubmitting(false);
+      setSaving(false);
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="page-wrapper">
         <div className="table-loading">
@@ -99,7 +99,7 @@ export default function EditEvent({ showToast }) {
     );
   }
 
-  if (fetchError) {
+  if (not_found) {
     return (
       <div className="page-wrapper">
         <div className="empty-state">
@@ -121,15 +121,15 @@ export default function EditEvent({ showToast }) {
       </div>
 
       <div className="form-card-container">
-        <form onSubmit={handleSubmit} className="event-form" noValidate>
+        <form onSubmit={handle_update} className="event-form" noValidate>
           <div className="form-group">
             <label htmlFor="name" className="form-label">Event Name *</label>
             <input
               id="name" type="text" name="name"
-              value={formData.name} onChange={handleChange}
-              className={`form-input ${errors.name ? 'input-error' : ''}`}
+              value={form_val.name} onChange={on_change}
+              className={`form-input ${formErr.name ? 'input-error' : ''}`}
             />
-            {errors.name && <span className="field-error">{errors.name}</span>}
+            {formErr.name && <span className="field-error">{formErr.name}</span>}
           </div>
 
           <div className="form-row">
@@ -137,20 +137,20 @@ export default function EditEvent({ showToast }) {
               <label htmlFor="date" className="form-label">Event Date *</label>
               <input
                 id="date" type="date" name="date"
-                value={formData.date} onChange={handleChange}
-                className={`form-input ${errors.date ? 'input-error' : ''}`}
+                value={form_val.date} onChange={on_change}
+                className={`form-input ${formErr.date ? 'input-error' : ''}`}
               />
-              {errors.date && <span className="field-error">{errors.date}</span>}
+              {formErr.date && <span className="field-error">{formErr.date}</span>}
             </div>
 
             <div className="form-group flex-1">
               <label htmlFor="venue" className="form-label">Venue *</label>
               <input
                 id="venue" type="text" name="venue"
-                value={formData.venue} onChange={handleChange}
-                className={`form-input ${errors.venue ? 'input-error' : ''}`}
+                value={form_val.venue} onChange={on_change}
+                className={`form-input ${formErr.venue ? 'input-error' : ''}`}
               />
-              {errors.venue && <span className="field-error">{errors.venue}</span>}
+              {formErr.venue && <span className="field-error">{formErr.venue}</span>}
             </div>
           </div>
 
@@ -159,7 +159,7 @@ export default function EditEvent({ showToast }) {
               <label htmlFor="totalRegistrations" className="form-label">Registrations</label>
               <input
                 id="totalRegistrations" type="number" min="0" name="totalRegistrations"
-                value={formData.totalRegistrations} onChange={handleChange}
+                value={form_val.totalRegistrations} onChange={on_change}
                 className="form-input"
               />
             </div>
@@ -169,16 +169,16 @@ export default function EditEvent({ showToast }) {
             <label htmlFor="description" className="form-label">Description *</label>
             <textarea
               id="description" name="description" rows={4}
-              value={formData.description} onChange={handleChange}
-              className={`form-textarea ${errors.description ? 'input-error' : ''}`}
+              value={form_val.description} onChange={on_change}
+              className={`form-textarea ${formErr.description ? 'input-error' : ''}`}
             />
-            {errors.description && <span className="field-error">{errors.description}</span>}
+            {formErr.description && <span className="field-error">{formErr.description}</span>}
           </div>
 
           <div className="form-actions">
             <Link to="/dashboard" className="btn btn-secondary">Cancel</Link>
-            <button type="submit" className="btn btn-primary" disabled={submitting}>
-              {submitting ? 'Updating...' : 'Save Changes'}
+            <button type="submit" className="btn btn-primary" disabled={saving}>
+              {saving ? 'Updating...' : 'Save Changes'}
             </button>
           </div>
         </form>

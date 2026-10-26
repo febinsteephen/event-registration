@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { createEvent } from '../services/api';
 
-// add new event page
+// page to add event
 export default function AddEvent({ showToast }) {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -13,38 +13,38 @@ export default function AddEvent({ showToast }) {
     totalRegistrations: 0
   });
 
-  const [errors, setErrors] = useState({});
-  const [submitting, setSubmitting] = useState(false);
+  const [errors, set_errors] = useState({});
+  const [is_submitting, set_is_submitting] = useState(false);
 
-  // basic validation
-  const validate = () => {
-    const errs = {};
+  // validation check
+  const checkForm = () => {
+    let errs = {};
     if (!formData.name.trim()) errs.name = 'Event name is required';
     if (!formData.description.trim()) errs.description = 'Description is required';
     if (!formData.date) errs.date = 'Date is required';
     if (!formData.venue.trim()) errs.venue = 'Venue is required';
-    setErrors(errs);
+    set_errors(errs);
     return Object.keys(errs).length === 0;
   };
 
-  const handleChange = (e) => {
+  const handle_change = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: null }));
+      set_errors((prev) => ({ ...prev, [name]: null }));
     }
   };
 
-  // submit form
-  const handleSubmit = async (e) => {
+  // on submit
+  const handle_submit = async (e) => {
     e.preventDefault();
-    if (!validate()) {
+    if (!checkForm()) {
       showToast({ type: 'error', message: 'Please fill in all required fields' });
       return;
     }
 
     try {
-      setSubmitting(true);
+      set_is_submitting(true);
       const res = await createEvent(formData);
       if (res.success) {
         showToast({ type: 'success', message: 'Event created!' });
@@ -54,7 +54,7 @@ export default function AddEvent({ showToast }) {
       const msg = err.response?.data?.message || 'Failed to create event';
       showToast({ type: 'error', message: msg });
     } finally {
-      setSubmitting(false);
+      set_is_submitting(false);
     }
   };
 
@@ -67,12 +67,12 @@ export default function AddEvent({ showToast }) {
       </div>
 
       <div className="form-card-container">
-        <form onSubmit={handleSubmit} className="event-form" noValidate>
+        <form onSubmit={handle_submit} className="event-form" noValidate>
           <div className="form-group">
             <label htmlFor="name" className="form-label">Event Name *</label>
             <input
               id="name" type="text" name="name"
-              value={formData.name} onChange={handleChange}
+              value={formData.name} onChange={handle_change}
               placeholder="e.g. National Hackathon 2026"
               className={`form-input ${errors.name ? 'input-error' : ''}`}
             />
@@ -84,7 +84,7 @@ export default function AddEvent({ showToast }) {
               <label htmlFor="date" className="form-label">Event Date *</label>
               <input
                 id="date" type="date" name="date"
-                value={formData.date} onChange={handleChange}
+                value={formData.date} onChange={handle_change}
                 className={`form-input ${errors.date ? 'input-error' : ''}`}
               />
               {errors.date && <span className="field-error">{errors.date}</span>}
@@ -94,7 +94,7 @@ export default function AddEvent({ showToast }) {
               <label htmlFor="venue" className="form-label">Venue *</label>
               <input
                 id="venue" type="text" name="venue"
-                value={formData.venue} onChange={handleChange}
+                value={formData.venue} onChange={handle_change}
                 placeholder="e.g. Main Auditorium"
                 className={`form-input ${errors.venue ? 'input-error' : ''}`}
               />
@@ -106,7 +106,7 @@ export default function AddEvent({ showToast }) {
             <label htmlFor="description" className="form-label">Description *</label>
             <textarea
               id="description" name="description" rows={4}
-              value={formData.description} onChange={handleChange}
+              value={formData.description} onChange={handle_change}
               placeholder="Write a short description about the event..."
               className={`form-textarea ${errors.description ? 'input-error' : ''}`}
             />
@@ -115,8 +115,8 @@ export default function AddEvent({ showToast }) {
 
           <div className="form-actions">
             <Link to="/dashboard" className="btn btn-secondary">Cancel</Link>
-            <button type="submit" className="btn btn-primary" disabled={submitting}>
-              {submitting ? 'Saving...' : 'Save Event'}
+            <button type="submit" className="btn btn-primary" disabled={is_submitting}>
+              {is_submitting ? 'Saving...' : 'Save Event'}
             </button>
           </div>
         </form>

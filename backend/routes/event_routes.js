@@ -6,10 +6,11 @@ import {
   updateEvent,
   deleteEvent,
   registerForEvent
-} from '../controllers/eventController.js';
+} from '../controllers/event_ctrl.js';
 
 const router = express.Router();
 
+// routes for /api/events
 router.route('/')
   .get(getEvents)
   .post(createEvent);

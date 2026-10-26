@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 
-// landing page component
+// home landing
 export default function Landing() {
-  const navigate = useNavigate();
+  const nav = useNavigate();
 
   return (
     <div className="landing-page">
@@ -11,8 +11,8 @@ export default function Landing() {
         <h1 className="landing-title">
           Gather<span className="accent">Up</span>
         </h1>
-        <p className="landing-desc">Manage events. Track registrations. Simply.</p>
-        <button className="landing-btn" onClick={() => navigate('/dashboard')}>
+          <p className="landing-desc">Manage events. Track registrations. Simply.</p>
+        <button className="landing-btn" onClick={() => nav('/dashboard')}>
           Get Started →
         </button>
       </div>

@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Toast from './components/Toast';
-import Landing from './pages/Landing';
-import Dashboard from './pages/Dashboard';
-import AddEvent from './pages/AddEvent';
-import EditEvent from './pages/EditEvent';
+import Navbar from './components/navbar';
+import Toast from './components/toast_msg';
+import Landing from './pages/landing_page';
+import Dashboard from './pages/dashboard';
+import AddEvent from './pages/add_event';
+import EditEvent from './pages/edit_event';
 import './App.css';
 
 export default function App() {
-  const [toast, setToast] = useState(null);
+  const [toast_data, set_toast_data] = useState(null);
 
-  const showToast = (toastObj) => setToast(toastObj);
-  const closeToast = () => setToast(null);
+  const showToast = (obj) => set_toast_data(obj);
+  const closeToast = () => set_toast_data(null);
 
   return (
     <BrowserRouter>
@@ -31,7 +31,7 @@ export default function App() {
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
               </main>
-              <Toast toast={toast} onClose={closeToast} />
+              <Toast toast={toast_data} onClose={closeToast} />
             </div>
           }
         />

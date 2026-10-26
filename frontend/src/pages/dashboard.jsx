@@ -2,18 +2,18 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Edit3, Trash2, Plus } from 'lucide-react';
 import { getEvents, deleteEvent, registerAttendee } from '../services/api';
-import ConfirmModal from '../components/ConfirmModal';
+import ConfirmModal from '../components/confirm_modal';
 
 export default function Dashboard({ showToast }) {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedForDelete, setSelectedForDelete] = useState(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [actionLoadingId, setActionLoadingId] = useState(null);
+  const [search_txt, setSearch_txt] = useState('');
+  const [del_target, setDel_target] = useState(null);
+  const [is_deleting, setIs_deleting] = useState(false);
+  const [loading_id, setLoading_id] = useState(null);
 
-  // fetch events from backend
-  const fetchEventsData = async () => {
+  // fetch data from api
+  const load_data = async () => {
     try {
       setLoading(true);
       const res = await getEvents();
@@ -31,50 +31,50 @@ export default function Dashboard({ showToast }) {
   };
 
   useEffect(() => {
-    fetchEventsData();
+    load_data();
   }, []);
 
-  // handle delete
-  const handleDeleteConfirm = async () => {
-    if (!selectedForDelete) return;
+  // delete an event
+  const handleDelete = async () => {
+    if (!del_target) return;
     try {
-      setIsDeleting(true);
-      await deleteEvent(selectedForDelete._id);
-      setEvents((prev) => prev.filter((item) => item._id !== selectedForDelete._id));
+      setIs_deleting(true);
+      await deleteEvent(del_target._id);
+      setEvents((prev) => prev.filter((item) => item._id !== del_target._id));
       showToast({ type: 'success', message: 'Event deleted' });
-      setSelectedForDelete(null);
+      setDel_target(null);
     } catch (err) {
       showToast({
         type: 'error',
         message: err.response?.data?.message || 'Failed to delete event'
       });
     } finally {
-      setIsDeleting(false);
+      setIs_deleting(false);
     }
   };
 
-  // add +1 registration
-  const handleQuickRegister = async (eventId) => {
+  // +1 button click
+  const handlePlusOne = async (id) => {
     try {
-      setActionLoadingId(eventId);
-      const res = await registerAttendee(eventId);
+      setLoading_id(id);
+      const res = await registerAttendee(id);
       if (res.success) {
         setEvents((prev) =>
-          prev.map((e) => (e._id === eventId ? { ...e, totalRegistrations: res.data.totalRegistrations } : e))
+          prev.map((e) => (e._id === id ? { ...e, totalRegistrations: res.data.totalRegistrations } : e))
         );
         showToast({ type: 'success', message: 'Registration recorded!' });
       }
     } catch (err) {
       showToast({ type: 'error', message: 'Failed to record registration' });
     } finally {
-      setActionLoadingId(null);
+      setLoading_id(null);
     }
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'TBA';
-    const d = new Date(dateString);
-    if (isNaN(d.getTime())) return dateString;
+  const formatDate = (str) => {
+    if (!str) return 'TBA';
+    const d = new Date(str);
+    if (isNaN(d.getTime())) return str;
     return d.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
@@ -82,10 +82,10 @@ export default function Dashboard({ showToast }) {
     });
   };
 
-  // filter events based on search
+  // search filter
   const filtered_events = events.filter((ev) =>
-    ev.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    ev.venue.toLowerCase().includes(searchTerm.toLowerCase())
+    ev.name.toLowerCase().includes(search_txt.toLowerCase()) ||
+    ev.venue.toLowerCase().includes(search_txt.toLowerCase())
   );
 
   return (
@@ -96,7 +96,7 @@ export default function Dashboard({ showToast }) {
           <p className="page-subtitle">Manage all your events here</p>
         </div>
         <div className="header-actions">
-          <button onClick={fetchEventsData} className="btn btn-secondary" title="Refresh">
+          <button onClick={load_data} className="btn btn-secondary" title="Refresh">
             Refresh
           </button>
           <Link to="/add" className="btn btn-primary">
@@ -111,8 +111,8 @@ export default function Dashboard({ showToast }) {
           <input
             type="text"
             placeholder="Search events..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={search_txt}
+            onChange={(e) => setSearch_txt(e.target.value)}
             className="search-input"
           />
           <span className="table-count">
@@ -127,8 +127,8 @@ export default function Dashboard({ showToast }) {
           </div>
         ) : filtered_events.length === 0 ? (
           <div className="empty-state">
-            <p>{searchTerm ? 'No matching events found.' : 'No events yet.'}</p>
-            {!searchTerm && (
+            <p>{search_txt ? 'No matching events found.' : 'No events yet.'}</p>
+            {!search_txt && (
               <Link to="/add" className="btn btn-primary" style={{marginTop: '1rem'}}>
                 <Plus size={16} /> Create Event
               </Link>
@@ -162,8 +162,8 @@ export default function Dashboard({ showToast }) {
                       <button
                         type="button"
                         className="btn-quick-reg"
-                        disabled={actionLoadingId === evt._id}
-                        onClick={() => handleQuickRegister(evt._id)}
+                        disabled={loading_id === evt._id}
+                        onClick={() => handlePlusOne(evt._id)}
                       >
                         +1
                       </button>
@@ -176,7 +176,7 @@ export default function Dashboard({ showToast }) {
                         <button
                           type="button"
                           className="btn-action btn-delete"
-                          onClick={() => setSelectedForDelete(evt)}
+                          onClick={() => setDel_target(evt)}
                           title="Delete"
                         >
                           <Trash2 size={15} /> Delete
@@ -192,16 +192,16 @@ export default function Dashboard({ showToast }) {
       </div>
 
       <ConfirmModal
-        isOpen={Boolean(selectedForDelete)}
+        isOpen={Boolean(del_target)}
         title="Delete Event"
         message={
-          selectedForDelete
-            ? `Are you sure you want to delete "${selectedForDelete.name}"?`
+          del_target
+            ? `Are you sure you want to delete "${del_target.name}"?`
             : ''
         }
-        onConfirm={handleDeleteConfirm}
-        onCancel={() => setSelectedForDelete(null)}
-        isDeleting={isDeleting}
+        onConfirm={handleDelete}
+        onCancel={() => setDel_target(null)}
+        isDeleting={is_deleting}
       />
     </div>
   );
