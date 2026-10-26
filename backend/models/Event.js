@@ -4,42 +4,31 @@ const eventSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'Event name is required'],
-      trim: true,
-      minlength: [2, 'Event name must have at least 2 characters'],
-      maxlength: [100, 'Event name cannot exceed 100 characters']
+      required: true,
+      trim: true
     },
     description: {
       type: String,
-      required: [true, 'Event description is required'],
-      trim: true,
-      maxlength: [1000, 'Description cannot exceed 1000 characters']
+      required: true,
+      trim: true
     },
     date: {
       type: Date,
-      required: [true, 'Event date is required']
+      required: true
     },
     venue: {
       type: String,
-      required: [true, 'Venue is required'],
+      required: true,
       trim: true
     },
     totalRegistrations: {
       type: Number,
       default: 0,
-      min: [0, 'Registrations count cannot be negative']
+      min: 0
     }
   },
-  {
-    timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true }
-  }
+  { timestamps: true }
 );
-
-eventSchema.virtual('displayId').get(function () {
-  return `EVT-${this._id.toString().slice(-6).toUpperCase()}`;
-});
 
 const Event = mongoose.model('Event', eventSchema);
 

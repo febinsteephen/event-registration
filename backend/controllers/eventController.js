@@ -5,7 +5,8 @@ export const getEvents = async (req, res) => {
     const events = await Event.find().sort({ createdAt: -1 });
     res.status(200).json({ success: true, count: events.length, data: events });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to retrieve events', error: error.message });
+    console.log('Error getting events:', error.message);
+    res.status(500).json({ success: false, message: 'Failed to get events' });
   }
 };
 
@@ -15,9 +16,9 @@ export const getEventById = async (req, res) => {
     if (!event) {
       return res.status(404).json({ success: false, message: 'Event not found' });
     }
-    res.status(200).json({ success: true, data: event });
+    res.json({ success: true, data: event });
   } catch (error) {
-    res.status(400).json({ success: false, message: 'Invalid event ID format', error: error.message });
+    res.status(400).json({ success: false, message: 'Invalid id' });
   }
 };
 
@@ -28,7 +29,7 @@ export const createEvent = async (req, res) => {
     if (!name || !description || !date || !venue) {
       return res.status(400).json({
         success: false,
-        message: 'Name, description, date, and venue are all required'
+        message: 'Please fill all required fields'
       });
     }
 
@@ -40,6 +41,7 @@ export const createEvent = async (req, res) => {
       totalRegistrations: Number(totalRegistrations) || 0
     });
 
+    // console.log('New event created:', newEvent.name);
     res.status(201).json({ success: true, data: newEvent });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
@@ -55,7 +57,9 @@ export const updateEvent = async (req, res) => {
     if (description !== undefined) payload.description = description.trim();
     if (date !== undefined) payload.date = date;
     if (venue !== undefined) payload.venue = venue.trim();
-    if (totalRegistrations !== undefined) payload.totalRegistrations = Math.max(0, Number(totalRegistrations));
+    if (totalRegistrations !== undefined) {
+      payload.totalRegistrations = Math.max(0, Number(totalRegistrations));
+    }
 
     const updated = await Event.findByIdAndUpdate(req.params.id, payload, {
       new: true,
@@ -63,7 +67,7 @@ export const updateEvent = async (req, res) => {
     });
 
     if (!updated) {
-      return res.status(404).json({ success: false, message: 'Event not found' });
+      return res.status(404).json({ message: 'Event not found' });
     }
 
     res.status(200).json({ success: true, data: updated });
@@ -78,9 +82,10 @@ export const deleteEvent = async (req, res) => {
     if (!removed) {
       return res.status(404).json({ success: false, message: 'Event not found' });
     }
-    res.status(200).json({ success: true, message: 'Event deleted successfully' });
+    res.json({ success: true, message: 'Deleted successfully' });
   } catch (error) {
-    res.status(400).json({ success: false, message: 'Could not delete event', error: error.message });
+    console.log(error);
+    res.status(400).json({ success: false, message: 'Could not delete' });
   }
 };
 
@@ -91,9 +96,11 @@ export const registerForEvent = async (req, res) => {
       { $inc: { totalRegistrations: 1 } },
       { new: true }
     );
+
     if (!updated) {
       return res.status(404).json({ success: false, message: 'Event not found' });
     }
+
     res.status(200).json({ success: true, data: updated });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
