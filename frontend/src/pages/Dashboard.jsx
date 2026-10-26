@@ -90,7 +90,7 @@ export default function Dashboard({ showToast }) {
     });
   };
 
-  const filteredEvents = events.filter((ev) =>
+  const filtered_events = events.filter((ev) =>
     ev.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     ev.venue.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (ev.displayId && ev.displayId.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -168,7 +168,7 @@ export default function Dashboard({ showToast }) {
             />
           </div>
           <div className="table-count">
-            Showing <strong>{filteredEvents.length}</strong> of {events.length} events
+            Showing <strong>{filtered_events.length}</strong> of {events.length} events
           </div>
         </div>
 
@@ -177,7 +177,7 @@ export default function Dashboard({ showToast }) {
             <div className="spinner"></div>
             <p>Loading events from database...</p>
           </div>
-        ) : filteredEvents.length === 0 ? (
+        ) : filtered_events.length === 0 ? (
           <div className="empty-state">
             <div className="empty-state-icon">
               <Calendar size={36} />
@@ -209,7 +209,7 @@ export default function Dashboard({ showToast }) {
                 </tr>
               </thead>
               <tbody>
-                {filteredEvents.map((evt) => (
+                {filtered_events.map((evt) => (
                   <tr key={evt._id} className="event-row">
                     <td>
                       <span className="id-badge" title={evt._id}>
@@ -299,3 +299,4 @@ export default function Dashboard({ showToast }) {
     </div>
   );
 }
+

@@ -33,7 +33,7 @@ export const createEvent = async (req, res) => {
       });
     }
 
-    const newEvent = await Event.create({
+    const newevent = await Event.create({
       name: name.trim(),
       description: description.trim(),
       date,
@@ -41,8 +41,7 @@ export const createEvent = async (req, res) => {
       totalRegistrations: Number(totalRegistrations) || 0
     });
 
-    // console.log('New event created:', newEvent.name);
-    res.status(201).json({ success: true, data: newEvent });
+    res.status(201).json({ success: true, data: newevent });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
