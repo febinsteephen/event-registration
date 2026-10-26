@@ -46,7 +46,7 @@ export default function AddEvent({ showToast }) {
       const res = await createEvent(formData);
       if (res.success) {
         showToast({ type: 'success', message: 'Event successfully created!' });
-        navigate('/');
+        navigate('/dashboard');
       }
     } catch (err) {
       const msg = err.response?.data?.message || 'Failed to create event';
@@ -59,7 +59,7 @@ export default function AddEvent({ showToast }) {
   return (
     <div className="page-wrapper">
       <div className="form-page-header">
-        <Link to="/" className="back-link">
+        <Link to="/dashboard" className="back-link">
           <ArrowLeft size={16} />
           <span>Back to Dashboard</span>
         </Link>
@@ -139,7 +139,7 @@ export default function AddEvent({ showToast }) {
           </div>
 
           <div className="form-actions">
-            <Link to="/" className="btn btn-secondary">
+            <Link to="/dashboard" className="btn btn-secondary">
               Cancel
             </Link>
             <button type="submit" className="btn btn-primary" disabled={submitting}>
@@ -158,3 +158,4 @@ export default function AddEvent({ showToast }) {
     </div>
   );
 }
+

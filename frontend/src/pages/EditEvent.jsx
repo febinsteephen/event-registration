@@ -77,7 +77,7 @@ export default function EditEvent({ showToast }) {
       const res = await updateEvent(id, formData);
       if (res.success) {
         showToast({ type: 'success', message: 'Event successfully updated!' });
-        navigate('/');
+        navigate('/dashboard');
       }
     } catch (err) {
       const msg = err.response?.data?.message || 'Failed to update event';
@@ -107,7 +107,7 @@ export default function EditEvent({ showToast }) {
           </div>
           <h3>Event Not Found</h3>
           <p>The event you are attempting to edit does not exist or has been removed.</p>
-          <Link to="/" className="btn btn-secondary">
+          <Link to="/dashboard" className="btn btn-secondary">
             Return to Dashboard
           </Link>
         </div>
@@ -118,7 +118,7 @@ export default function EditEvent({ showToast }) {
   return (
     <div className="page-wrapper">
       <div className="form-page-header">
-        <Link to="/" className="back-link">
+        <Link to="/dashboard" className="back-link">
           <ArrowLeft size={16} />
           <span>Back to Dashboard</span>
         </Link>
@@ -213,7 +213,7 @@ export default function EditEvent({ showToast }) {
           </div>
 
           <div className="form-actions">
-            <Link to="/" className="btn btn-secondary">
+            <Link to="/dashboard" className="btn btn-secondary">
               Cancel
             </Link>
             <button type="submit" className="btn btn-primary" disabled={submitting}>
@@ -232,3 +232,4 @@ export default function EditEvent({ showToast }) {
     </div>
   );
 }
+

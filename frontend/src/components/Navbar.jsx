@@ -1,27 +1,26 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, CalendarPlus, Sparkles } from 'lucide-react';
+import { LayoutDashboard, CalendarPlus, Zap } from 'lucide-react';
 
 export default function Navbar() {
   return (
     <header className="navbar-wrapper">
       <div className="navbar-container">
-        <div className="brand-group">
+        <NavLink to="/" className="brand-group">
           <div className="brand-badge">
-            <Sparkles size={18} />
+            <img src="/logo.jpg" alt="GatherUp logo" className="brand-logo" />
           </div>
           <div className="brand-titles">
-            <span className="brand-name">GatherUp</span>
+            <span className="brand-name">Gather<span className="brand-accent">Up</span></span>
             <span className="brand-sub">Admin Portal</span>
           </div>
-        </div>
+        </NavLink>
 
         <nav className="nav-tabs" aria-label="Main Navigation">
           <NavLink
-            to="/"
-            end
+            to="/dashboard"
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
           >
-            <LayoutDashboard size={18} />
+            <LayoutDashboard size={17} />
             <span>Dashboard</span>
           </NavLink>
 
@@ -29,7 +28,7 @@ export default function Navbar() {
             to="/add"
             className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
           >
-            <CalendarPlus size={18} />
+            <CalendarPlus size={17} />
             <span>Add Event</span>
           </NavLink>
         </nav>
