@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { CheckCircle2, AlertCircle, X } from 'lucide-react';
 
+// toast notification component
 export default function Toast({ toast, onClose }) {
   useEffect(() => {
     if (!toast) return;
@@ -12,17 +12,10 @@ export default function Toast({ toast, onClose }) {
 
   if (!toast) return null;
 
-  const isSuccess = toast.type !== 'error';
-
   return (
-    <div className={`toast-container ${isSuccess ? 'toast-success' : 'toast-error'}`}>
-      <div className="toast-icon">
-        {isSuccess ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
-      </div>
-      <div className="toast-text">{toast.message}</div>
-      <button className="toast-close" onClick={onClose} aria-label="Dismiss message">
-        <X size={15} />
-      </button>
+    <div className={`toast-container ${toast.type === 'error' ? 'toast-error' : 'toast-success'}`}>
+      <span>{toast.message}</span>
+      <button className="toast-close" onClick={onClose}>✕</button>
     </div>
   );
 }

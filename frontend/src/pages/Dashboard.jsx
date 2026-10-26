@@ -1,17 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Calendar,
-  MapPin,
-  Users,
-  Edit3,
-  Trash2,
-  Plus,
-  RefreshCw,
-  Search,
-  CalendarDays,
-  UserCheck
-} from 'lucide-react';
+import { Edit3, Trash2, Plus } from 'lucide-react';
 import { getEvents, deleteEvent, registerAttendee } from '../services/api';
 import ConfirmModal from '../components/ConfirmModal';
 
@@ -23,6 +12,7 @@ export default function Dashboard({ showToast }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [actionLoadingId, setActionLoadingId] = useState(null);
 
+  // fetch events from backend
   const fetchEventsData = async () => {
     try {
       setLoading(true);
@@ -44,13 +34,14 @@ export default function Dashboard({ showToast }) {
     fetchEventsData();
   }, []);
 
+  // handle delete
   const handleDeleteConfirm = async () => {
     if (!selectedForDelete) return;
     try {
       setIsDeleting(true);
       await deleteEvent(selectedForDelete._id);
       setEvents((prev) => prev.filter((item) => item._id !== selectedForDelete._id));
-      showToast({ type: 'success', message: 'Event successfully removed' });
+      showToast({ type: 'success', message: 'Event deleted' });
       setSelectedForDelete(null);
     } catch (err) {
       showToast({
@@ -62,6 +53,7 @@ export default function Dashboard({ showToast }) {
     }
   };
 
+  // add +1 registration
   const handleQuickRegister = async (eventId) => {
     try {
       setActionLoadingId(eventId);
@@ -90,29 +82,22 @@ export default function Dashboard({ showToast }) {
     });
   };
 
+  // filter events based on search
   const filtered_events = events.filter((ev) =>
     ev.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    ev.venue.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (ev.displayId && ev.displayId.toLowerCase().includes(searchTerm.toLowerCase()))
+    ev.venue.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const totalAttendeeCount = events.reduce((sum, item) => sum + (item.totalRegistrations || 0), 0);
 
   return (
     <div className="page-wrapper">
       <div className="dashboard-header">
         <div>
-          <h1 className="page-title">Event Management Dashboard</h1>
-          <p className="page-subtitle">Track, update, and coordinate scheduled campus events</p>
+          <h1 className="page-title">Events Dashboard</h1>
+          <p className="page-subtitle">Manage all your events here</p>
         </div>
         <div className="header-actions">
-          <button
-            onClick={fetchEventsData}
-            className="btn btn-secondary btn-icon"
-            title="Refresh events list"
-          >
-            <RefreshCw size={16} className={loading ? 'spin' : ''} />
-            <span>Refresh</span>
+          <button onClick={fetchEventsData} className="btn btn-secondary" title="Refresh">
+            Refresh
           </button>
           <Link to="/add" className="btn btn-primary">
             <Plus size={18} />
@@ -121,77 +106,31 @@ export default function Dashboard({ showToast }) {
         </div>
       </div>
 
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon-wrapper icon-indigo">
-            <CalendarDays size={22} />
-          </div>
-          <div className="stat-info">
-            <span className="stat-label">Total Events</span>
-            <span className="stat-val">{events.length}</span>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-icon-wrapper icon-emerald">
-            <Users size={22} />
-          </div>
-          <div className="stat-info">
-            <span className="stat-label">Total Registrations</span>
-            <span className="stat-val">{totalAttendeeCount}</span>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-icon-wrapper icon-amber">
-            <UserCheck size={22} />
-          </div>
-          <div className="stat-info">
-            <span className="stat-label">Avg. Attendees/Event</span>
-            <span className="stat-val">
-              {events.length > 0 ? (totalAttendeeCount / events.length).toFixed(1) : 0}
-            </span>
-          </div>
-        </div>
-      </div>
-
       <div className="content-card">
         <div className="card-toolbar">
-          <div className="search-box">
-            <Search size={17} className="search-icon" />
-            <input
-              type="text"
-              placeholder="Search by event name, venue, or ID..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="search-input"
-            />
-          </div>
-          <div className="table-count">
-            Showing <strong>{filtered_events.length}</strong> of {events.length} events
-          </div>
+          <input
+            type="text"
+            placeholder="Search events..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+          <span className="table-count">
+            {filtered_events.length} of {events.length} events
+          </span>
         </div>
 
         {loading ? (
           <div className="table-loading">
             <div className="spinner"></div>
-            <p>Loading events from database...</p>
+            <p>Loading...</p>
           </div>
         ) : filtered_events.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-state-icon">
-              <Calendar size={36} />
-            </div>
-            <h3>{searchTerm ? 'No matching events found' : 'No events scheduled yet'}</h3>
-            <p>
-              {searchTerm
-                ? 'Try tweaking your search keywords or clear the search input.'
-                : 'Get started by creating your first event using the button below.'}
-            </p>
+            <p>{searchTerm ? 'No matching events found.' : 'No events yet.'}</p>
             {!searchTerm && (
-              <Link to="/add" className="btn btn-primary">
-                <Plus size={16} />
-                <span>Create New Event</span>
+              <Link to="/add" className="btn btn-primary" style={{marginTop: '1rem'}}>
+                <Plus size={16} /> Create Event
               </Link>
             )}
           </div>
@@ -200,79 +139,47 @@ export default function Dashboard({ showToast }) {
             <table className="events-table">
               <thead>
                 <tr>
-                  <th>Event ID</th>
                   <th>Event Name</th>
-                  <th>Event Date</th>
+                  <th>Date</th>
                   <th>Venue</th>
-                  <th>Total Registrations</th>
+                  <th>Registrations</th>
                   <th className="text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered_events.map((evt) => (
-                  <tr key={evt._id} className="event-row">
+                  <tr key={evt._id}>
                     <td>
-                      <span className="id-badge" title={evt._id}>
-                        {evt.displayId || `EVT-${evt._id.slice(-6).toUpperCase()}`}
-                      </span>
+                      <strong>{evt.name}</strong>
+                      {evt.description && (
+                        <div className="event-desc-snippet">{evt.description}</div>
+                      )}
                     </td>
+                    <td>{formatDate(evt.date)}</td>
+                    <td>{evt.venue}</td>
                     <td>
-                      <div className="event-name-cell">
-                        <span className="event-name-text">{evt.name}</span>
-                        {evt.description && (
-                          <span className="event-desc-snippet" title={evt.description}>
-                            {evt.description}
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td>
-                      <div className="cell-with-icon">
-                        <Calendar size={15} className="text-muted" />
-                        <span>{formatDate(evt.date)}</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="cell-with-icon">
-                        <MapPin size={15} className="text-muted" />
-                        <span>{evt.venue}</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="reg-badge-group">
-                        <span className="reg-badge">
-                          <Users size={14} />
-                          <span>{evt.totalRegistrations || 0}</span>
-                        </span>
-                        <button
-                          type="button"
-                          className="btn-quick-reg"
-                          title="Simulate Attendee Registration"
-                          disabled={actionLoadingId === evt._id}
-                          onClick={() => handleQuickRegister(evt._id)}
-                        >
-                          +1
-                        </button>
-                      </div>
+                      <span className="reg-count">{evt.totalRegistrations || 0}</span>
+                      <button
+                        type="button"
+                        className="btn-quick-reg"
+                        disabled={actionLoadingId === evt._id}
+                        onClick={() => handleQuickRegister(evt._id)}
+                      >
+                        +1
+                      </button>
                     </td>
                     <td>
                       <div className="row-actions">
-                        <Link
-                          to={`/edit/${evt._id}`}
-                          className="btn-action btn-edit"
-                          title="Update Event"
-                        >
-                          <Edit3 size={15} />
-                          <span>Update</span>
+                        <Link to={`/edit/${evt._id}`} className="btn-action btn-edit" title="Edit">
+                          <Edit3 size={15} /> Edit
                         </Link>
                         <button
                           type="button"
                           className="btn-action btn-delete"
                           onClick={() => setSelectedForDelete(evt)}
-                          title="Delete Event"
+                          title="Delete"
                         >
-                          <Trash2 size={15} />
-                          <span>Delete</span>
+                          <Trash2 size={15} /> Delete
                         </button>
                       </div>
                     </td>
@@ -289,7 +196,7 @@ export default function Dashboard({ showToast }) {
         title="Delete Event"
         message={
           selectedForDelete
-            ? `Are you sure you want to delete "${selectedForDelete.name}"? This action cannot be reversed.`
+            ? `Are you sure you want to delete "${selectedForDelete.name}"?`
             : ''
         }
         onConfirm={handleDeleteConfirm}
@@ -299,5 +206,3 @@ export default function Dashboard({ showToast }) {
     </div>
   );
 }
-
-

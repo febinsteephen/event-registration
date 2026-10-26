@@ -1,5 +1,6 @@
 import Event from '../models/Event.js';
 
+// get all events
 export const getEvents = async (req, res) => {
   try {
     const events = await Event.find().sort({ createdAt: -1 });
@@ -10,6 +11,7 @@ export const getEvents = async (req, res) => {
   }
 };
 
+// get single event by id
 export const getEventById = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
@@ -22,10 +24,12 @@ export const getEventById = async (req, res) => {
   }
 };
 
+// create new event
 export const createEvent = async (req, res) => {
   try {
     const { name, description, date, venue, totalRegistrations } = req.body;
 
+    // check required fields
     if (!name || !description || !date || !venue) {
       return res.status(400).json({
         success: false,
@@ -47,6 +51,7 @@ export const createEvent = async (req, res) => {
   }
 };
 
+// update existing event
 export const updateEvent = async (req, res) => {
   try {
     const { name, description, date, venue, totalRegistrations } = req.body;
@@ -75,6 +80,7 @@ export const updateEvent = async (req, res) => {
   }
 };
 
+// delete event
 export const deleteEvent = async (req, res) => {
   try {
     const removed = await Event.findByIdAndDelete(req.params.id);
@@ -88,6 +94,7 @@ export const deleteEvent = async (req, res) => {
   }
 };
 
+// register +1 attendee
 export const registerForEvent = async (req, res) => {
   try {
     const updated = await Event.findByIdAndUpdate(

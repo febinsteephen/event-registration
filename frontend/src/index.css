@@ -1,34 +1,3 @@
-:root {
-  --primary: #8B5CF6;
-  --primary-hover: #7C3AED;
-  --primary-subtle: #1E1040;
-  --primary-ring: rgba(139, 92, 246, 0.25);
-  --bg-page: #08080F;
-  --bg-card: #0E0E1C;
-  --bg-subtle: #13132A;
-  --border: #1E1E38;
-  --border-focus: #8B5CF6;
-  --text-main: #E8E8F5;
-  --text-muted: #7B7B9E;
-  --text-light: #3E3E5E;
-  --danger: #F87171;
-  --danger-hover: #EF4444;
-  --danger-subtle: #1F0F0F;
-  --success: #34D399;
-  --success-subtle: #0A1F16;
-  --warning: #FBBF24;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
-  --shadow-lg: 0 10px 30px rgba(0,0,0,0.6);
-  --shadow-float: 0 20px 40px rgba(0,0,0,0.7);
-  --shadow-glow: 0 0 20px rgba(139,92,246,0.15);
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-full: 9999px;
-  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -36,11 +5,10 @@
 }
 
 body {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--bg-page);
-  color: var(--text-main);
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  background-color: #0a0a14;
+  color: #e0e0ee;
   line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
 

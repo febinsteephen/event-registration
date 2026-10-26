@@ -1,49 +1,40 @@
-```md
-# Event Registration Admin Panel
+# GatherUp - Event Registration Admin Panel
 
-Simple MERN stack project for managing college events.
+MERN stack project for managing college events and tracking registrations.
 
-## Tech Stack
-- Frontend → React (Vite), React Router, Axios, Lucide icons
-- Backend → Node.js + Express
-- Database → MongoDB (Mongoose)
+## Tech Used
+- React (Vite) + React Router for frontend
+- Node.js, Express for backend
+- MongoDB with Mongoose
 
-## How to run
+## Running the project
 
-### Backend
-```bash
+Start backend first:
+```
 cd backend
 npm install
 npm run dev
 ```
-Server runs on http://localhost:5000
+Backend runs on http://localhost:5000
 
-### Frontend
-```bash
+Then start frontend:
+```
 cd frontend
 npm install
 npm run dev
 ```
-App runs on http://localhost:5173
+Frontend runs on http://localhost:5173
 
-Make sure the backend is running first, otherwise the frontend won't be able to fetch data.
+## What it does
+- Dashboard showing all events in a table
+- Add, edit, delete events
+- Search events by name/venue
+- Click +1 to increase registration count
+- Dark themed UI
 
-## Features
-- View all events on dashboard
-- Search events by name or venue
-- Add new event
-- Edit existing event
-- Delete event (with confirmation)
-- Increase registration count with one click
-
-## Environment Variables
-
-Create a file `backend/.env` with:
-
+## Env setup
+Create `backend/.env` with:
 ```
 PORT=5000
-MONGO_URI=your_mongodb_atlas_connection_string
-```
-
-(You can copy from `.env.example`)
+MONGO_URI=your_mongo_atlas_uri
 ```
